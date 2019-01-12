@@ -22,6 +22,8 @@ class Test{
         this.instance=null;
         this.page=null;
         this.urls=[
+            'http://www.w3school.com.cn/',
+            'http://zystatic.17zuoye.com/mteacher/list.html',
             'http://movie.weibo.com/moviehomepage',
             'https://www.baidu.com/',
             'https://www.qidian.com/',
@@ -66,14 +68,41 @@ class Test{
                 }
             },5)
         });
-
-        page.on('onConsoleMessage', function(msg, lineNum, sourceId) {
+        
+        page.on('onConsoleMessage',async (msg, lineNum, sourceId) =>{
             // console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+            const url=this.curUrl
+            const time=this.progress.hasRunTimes['openPage']
+            if (msg.indexOf("PHANTOM_FUNCTION") === 0) {
+                console.log('DOMContentLoaded',timeLog(url))
+                this.page.render('dist/mteacher/DOMContentLoaded'+time+'.png')
+            }else if (msg.indexOf("PHANTOM_userAction") === 0) {
+                console.log('userActionTime',timeLog(url))
+                this.page.render('dist/mteacher/userActionTime'+time+'.png')
+            }else {
+                console.log(msg);
+            }
+        });
+        page.on('onInitialized', async ()=>{
+            this.loading=true;
+            const url=this.curUrl
+            console.log('onInitialized',timeLog(url))
+            page.evaluate(function () {
+                if(!window.PHANTOM_used){
+                    window.PHANTOM_used=true;
+                    document.addEventListener('DOMContentLoaded', function() {
+                        console.log("PHANTOM_FUNCTION");
+                    }, false);
+                    document.onreadystatechange = function() {
+                        if (this.readyState == "complete") {
+                            console.log("PHANTOM_userAction");
+                        }
+                    }
+                }
 
+            });
         });
-        page.on('onResourceRequested', function(requestData) {
-            // console.info('Requesting', requestData.url);
-        });
+
         page.on('onResourceError', function(requestData) {
             // console.info('Requesting', requestData.url);
         });
@@ -97,15 +126,14 @@ class Test{
             console.log(url,timeLog(url,'start'))
 
             await this.page.open(url);
-            // var script2 = "function(){ console.log(window.phantomVar); }";
-            // this.page.evaluateJavaScript(script2);
+
             // const content = await this.page.property('content');
 
-            console.log('openPage',timeLog(url))
 
+            // console.log('openPage',timeLog(url))
 
         }else{
-            this.progress.waitSecondAndGo(1,'nextTest')
+            this.progress.waitSecondAndGo(5,'nextTest')
         }
 
     }
@@ -116,11 +144,13 @@ class Test{
 
     }
     async capture(step,time){
-        await this.page.render('dist/mteacher/'+time+'.png')
+        // await this.page.render('dist/mteacher/onLoadFinished'+time+'.png')
         this.progress.waitSecondAndGo(0,'openPage')
     }
     // 结束
     async nextTest(){
+        console.log('end')
+        await this.page.close();
         await this.instance.exit();
     }
 
