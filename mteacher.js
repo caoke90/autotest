@@ -83,10 +83,9 @@ class Test{
                 console.log(msg);
             }
         });
-        page.on('onInitialized', async ()=>{
-            this.loading=true;
-            const url=this.curUrl
-            console.log('onInitialized',timeLog(url))
+        page.on('onUrlChanged', async ()=> {
+            const url = this.curUrl
+            console.log('onUrlChanged', timeLog(url))
             page.evaluate(function () {
                 if(!window.PHANTOM_used){
                     window.PHANTOM_used=true;
@@ -101,6 +100,10 @@ class Test{
                 }
 
             });
+        })
+        page.on('onInitialized', async ()=>{
+            const url=this.curUrl
+            // console.log('onInitialized',timeLog(url))
         });
 
         page.on('onResourceError', function(requestData) {
