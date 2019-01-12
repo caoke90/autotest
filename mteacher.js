@@ -5,7 +5,6 @@ const Step = require('./step');
 const timeCache={};
 const timeLog=function (key,status) {
     if(status=='start'){
-
         timeCache[key]=new Date().getTime()
         return new Date().Format('yyyy-MM-dd hh:mm:ss S');
     }else{
@@ -63,6 +62,7 @@ class Test{
             setTimeout(()=>{
                 if(!this.loading&&this.waitFunc){
                     console.log('onLoadFinished',timeLog(url))
+                    console.log('')
                     this.waitFunc()
                     this.waitFunc=null;
                 }
@@ -122,7 +122,6 @@ class Test{
         if(url){
             this.curUrl=url;
             this.progress.next()
-            console.log('')
             console.log(url,timeLog(url,'start'))
 
             await this.page.open(url);
@@ -149,7 +148,7 @@ class Test{
     }
     // 结束
     async nextTest(){
-        console.log('end')
+        console.log('结束')
         await this.page.close();
         await this.instance.exit();
     }
