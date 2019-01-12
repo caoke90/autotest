@@ -116,7 +116,7 @@ class Test{
 
     }
     async capture(step,time){
-        await this.page.render('mteacher/'+time+'.png')
+        await this.page.render('dist/mteacher/'+time+'.png')
         this.progress.waitSecondAndGo(0,'openPage')
     }
     // 结束
